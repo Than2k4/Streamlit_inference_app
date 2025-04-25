@@ -1,0 +1,6 @@
+opencv-python==4.10.0.84
+streamlit==1.44.1
+ultralytics==8.3.79
+numpy
+Pillow
+matplotlib
