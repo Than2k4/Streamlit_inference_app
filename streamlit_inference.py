@@ -9,51 +9,7 @@ from ultralytics import YOLO
 from ultralytics.utils import LOGGER
 from ultralytics.utils.checks import check_requirements
 from ultralytics.utils.downloads import GITHUB_ASSETS_STEMS
-from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 
-RTC_CONFIGURATION = RTCConfiguration(
-    {
-      "iceServers": [
-      {
-        "urls": ["stun:stun.relay.metered.ca:80"],
-      },
-      {
-        "urls": ["turn:global.relay.metered.ca:80"],
-        "username": "6d7b9ebe74cfcf3ff4d74844",
-        "credential": "0yaGxZVrCZFteYcX",
-      },
-      {
-        "urls": ["turn:global.relay.metered.ca:80?transport=tcp"],
-        "username": "6d7b9ebe74cfcf3ff4d74844",
-        "credential": "0yaGxZVrCZFteYcX",
-      },
-      {
-        "urls": ["turn:global.relay.metered.ca:443"],
-        "username": "6d7b9ebe74cfcf3ff4d74844",
-        "credential": "0yaGxZVrCZFteYcX",
-      },
-      {
-        "urls": ["turns:global.relay.metered.ca:443?transport=tcp"],
-        "username": "6d7b9ebe74cfcf3ff4d74844",
-        "credential": "0yaGxZVrCZFteYcX",
-      },
-      ]
-    }
-)
-
-class VideoProcessor:
-    def recv(self, frame):
-        img = frame.to_ndarray(format="bgr24")
-        return av.VideoFrame.from_ndarray(img, format="bgr24")
-
-webrtc_ctx = webrtc_streamer(
-    key="WYH",
-    mode=WebRtcMode.SENDRECV,
-    rtc_configuration=RTC_CONFIGURATION,
-    media_stream_constraints={"video": True, "audio": False},
-    video_processor_factory=VideoProcessor,
-    async_processing=True,
-)
 
 class Inference:
     """
@@ -167,18 +123,7 @@ class Inference:
                     out.write(g.read())  # Read bytes into file
                 self.vid_file_name = "ultralytics.mp4"
         elif self.source == "webcam":
-            img_file = self.st.camera_input("Start Webcam")
-            if img_file:
-                bytes_data = img_file.getvalue()
-                self.vid_file_name = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-                img = self.vid_file_name
-                if self.enable_trk == "Yes":
-                    results = self.model.track(img, conf=self.conf, iou=self.iou, classes=self.selected_ind, persist=True)
-                else:
-                    results = self.model(img, conf=self.conf, iou=self.iou, classes=self.selected_ind)
-                annotated = results[0].plot()
-                self.st.image(annotated, channels="BGR")
-
+            self.vid_file_name = 0  # Use webcam index 0
 
     def configure(self):
         """Configure the model and load selected classes for inference."""
